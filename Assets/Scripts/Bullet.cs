@@ -17,18 +17,17 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject,5);
     }
 
-
-    void Update()
-    {
-        //if(transform.position.z > 20)
-        //{
-        //    Destroy(gameObject);
-        //}
-    }
-
     void OnTriggerEnter(Collider other)
     {
-        GunController.Instance.HitFish(gameObject, bulletData);
-        Destroy(gameObject);
+        // box
+        if (other.gameObject.layer == LayerMask.NameToLayer("Box"))
+        {
+            GunController.Instance.HitBox(other.gameObject);
+        }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Fish")) 
+        {
+            GunController.Instance.HitFish(gameObject, bulletData);
+            Destroy(gameObject);
+        }
     }
 }

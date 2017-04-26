@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Timers;
 
 public class UIController : MonoBehaviour
 {
@@ -11,25 +12,16 @@ public class UIController : MonoBehaviour
     }
 
     [SerializeField]
-    private Text gunScore;
+    private ScoreUI scoreUI;
 
     [SerializeField]
-    private Text bulluetCost;
-
-    [SerializeField]
-    private Image bulletCostImage;
-
-    [SerializeField]
-    private Sprite[] bulletImages;
+    private Text[] bulluetCosts;
 
     [SerializeField]
     private Text message;
 
     [SerializeField]
     private GameObject rebornUI;
-
-    [SerializeField]
-    private Text rebornText;
 
     [SerializeField]
     private GameObject resultUI;
@@ -40,15 +32,32 @@ public class UIController : MonoBehaviour
     [SerializeField]
     private Text config;
 
-    public void SetGunScore(int score)
+    [SerializeField]
+    private GameObject UIBOSS;
+
+    [SerializeField]
+    private GameObject UItutorial;
+
+    [SerializeField]
+    private GameObject UIQuit;
+
+    [SerializeField]
+    private RankUI rankUI;
+
+    [SerializeField]
+    private GameObject versionUI;
+
+    private bool IsNormalGame;
+
+
+    public void UpdateScore()
     {
-        gunScore.text = score.ToString();
+        scoreUI.UpdateScore(GameController.Instance.GunScore, GameController.Instance.FishKilledScore);
     }
 
     public void SetBulletCost(BulletData bullet)
     {
-        bulluetCost.text = bullet.Cost.ToString();
-        bulletCostImage.sprite = bulletImages[bullet.Id];
+        bulluetCosts[bullet.Id].text = bullet.Cost.ToString();
     }
 
     public void SetConfig(string c)
@@ -61,7 +70,8 @@ public class UIController : MonoBehaviour
         BulletData bullet = CsvParser.Instance.List_BulletData[0];
         SetBulletCost(bullet);
 
-        SetGunScore(GameController.Instance.GunScore);
+        UpdateScore();
+        scoreUI.SetScoreUIType(GameController.Instance.IsNormalGame);
     }
 
     public IEnumerator ShowMsg(string msg)
@@ -78,7 +88,8 @@ public class UIController : MonoBehaviour
 
         if(b)
         {
-            rebornText.text = "是否尝试花费" + MyServerManager.GamePrice + "积分用于复活？";
+            string rebornMsg = "是否尝试花费\n" + MyServerManager.GamePrice + "积分\n用于复活？";
+            rebornUI.GetComponent<RebornUI>().WriteMsg(rebornMsg);
             SoundController.Instance.PlayMusic(Config.Fail);
         }
     }
@@ -86,8 +97,17 @@ public class UIController : MonoBehaviour
     public IEnumerator ShowGameResult(float wait = 0)
     {
         yield return new WaitForSeconds(wait);
-        resultUI.gameObject.active = true;
-        resultScore.text = GameController.Instance.GunScore.ToString();
+
+        if (GameController.Instance.IsNormalGame)
+        {
+            // rank ui
+            rankUI.UpdateRankingAndShow(GameController.Instance.FishKilledScore);
+        }
+        else
+        {
+            resultUI.gameObject.active = true;
+            resultScore.text = GameController.Instance.GunScore.ToString();
+        }
 
 
         // sound
@@ -95,5 +115,47 @@ public class UIController : MonoBehaviour
 
         yield return new WaitForSeconds(GameController.Instance.EndGameWaitSeconds);
         GameController.Instance.EndGame();
+    }
+
+    public IEnumerator ShowBoss()
+    {
+        UIBOSS.gameObject.active = true;
+        SoundController.Instance.PlayMusic(Config.Warnig);
+        yield return new WaitForSeconds(2);
+        UIBOSS.gameObject.active = false;
+    }
+
+    public IEnumerator ShowTutorial(float wait)
+    {
+        UItutorial.gameObject.active = true;
+        yield return new WaitForSeconds(wait);
+        UItutorial.gameObject.active = false;
+    }
+
+    public void ShowQuit(bool q)
+    {
+        UIQuit.gameObject.active = q;
+    }
+
+    public IEnumerator VersionWrong()
+    {
+        versionUI.gameObject.active = true;
+        yield return new WaitForSeconds(10.0f);
+        GameController.Instance.EndGame();
+    }
+
+    public void PlayerGetAttacked()
+    {
+        scoreUI.PlayerGetAttacked();
+    }
+
+    public void OctopusAttakBegin()
+    {
+        scoreUI.OctopusAttakBegin();
+    }
+
+    public void OctopusAttakEnd()
+    {
+        scoreUI.OctopusAttakEnd();
     }
 }

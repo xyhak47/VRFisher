@@ -22,14 +22,15 @@ Shader "Underwater/Desktop"
 		_FogPosition1("Position B (World Y)", Float) = 6
 		_FogStart("Start", Float) = 0
 		_FogEnd("End", Float) = 15
-		[HideInInspector]
+		[System.NonSerialized]
 		_Animation("Animation", Float) = 0
 	}
 
 	SubShader
 	{
 		Tags { "RenderType"="Opaque" }
-		LOD 300
+
+		Cull Off
 
 		CGPROGRAM
 			#pragma surface surf CustomLambert fullforwardshadows nofog noambient

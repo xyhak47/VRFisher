@@ -24,7 +24,7 @@ public class SoundController : MonoBehaviour
 
     public AudioClip bgm;
 
-
+    public Transform musicPos;
 
     void Start()
     {
@@ -34,7 +34,7 @@ public class SoundController : MonoBehaviour
 
     public void PlayMusic(string MusicName)
     {
-        AudioSource.PlayClipAtPoint(List_Music.Find(it => it.MusicName == MusicName).audioClip, Camera.main.transform.position, BackGroundMusicVolume * 2);
+        AudioSource.PlayClipAtPoint(List_Music.Find(it => it.MusicName == MusicName).audioClip, musicPos.position, 3);
     }
 
     void PlayMusicBg()
@@ -42,7 +42,7 @@ public class SoundController : MonoBehaviour
         audioSource.clip = bgm;
         audioSource.Play();
         audioSource.loop = true;
-        BackGroundMusicVolume = audioSource.volume;
+        audioSource.volume = 0.3f;
     }
 
     public void StopPlayBgm()

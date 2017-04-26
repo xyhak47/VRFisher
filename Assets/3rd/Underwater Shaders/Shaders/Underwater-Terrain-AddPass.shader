@@ -2,15 +2,15 @@ Shader "Hidden/Underwater/Terrain-AddPass"
 {
 	Properties
 	{
-		[HideInInspector] _Control ("Control (RGBA)", 2D) = "black" {}
-		[HideInInspector] _Splat3 ("Layer 3 (A)", 2D) = "white" {}
-		[HideInInspector] _Splat2 ("Layer 2 (B)", 2D) = "white" {}
-		[HideInInspector] _Splat1 ("Layer 1 (G)", 2D) = "white" {}
-		[HideInInspector] _Splat0 ("Layer 0 (R)", 2D) = "white" {}
-		[HideInInspector] _Normal3 ("Normal 3 (A)", 2D) = "bump" {}
-		[HideInInspector] _Normal2 ("Normal 2 (B)", 2D) = "bump" {}
-		[HideInInspector] _Normal1 ("Normal 1 (G)", 2D) = "bump" {}
-		[HideInInspector] _Normal0 ("Normal 0 (R)", 2D) = "bump" {}
+		[System.NonSerialized] _Control ("Control (RGBA)", 2D) = "black" {}
+		[System.NonSerialized] _Splat3 ("Layer 3 (A)", 2D) = "white" {}
+		[System.NonSerialized] _Splat2 ("Layer 2 (B)", 2D) = "white" {}
+		[System.NonSerialized] _Splat1 ("Layer 1 (G)", 2D) = "white" {}
+		[System.NonSerialized] _Splat0 ("Layer 0 (R)", 2D) = "white" {}
+		[System.NonSerialized] _Normal3 ("Normal 3 (A)", 2D) = "bump" {}
+		[System.NonSerialized] _Normal2 ("Normal 2 (B)", 2D) = "bump" {}
+		[System.NonSerialized] _Normal1 ("Normal 1 (G)", 2D) = "bump" {}
+		[System.NonSerialized] _Normal0 ("Normal 0 (R)", 2D) = "bump" {}
 		// Custom Properties
 		_Caustics("Caustics Texture (RGBA)", 2D) = "white" {}
 		_CausticsCoord("Tiling(XY) Offset(ZW) - Overrides texture coords", Vector) = (0.5,0.5,0,0)
@@ -28,7 +28,7 @@ Shader "Hidden/Underwater/Terrain-AddPass"
 		_FogPosition1("Position B (World Y)", Float) = 6
 		_FogStart("Start", Float) = 0
 		_FogEnd("End", Float) = 15
-		[HideInInspector]
+		[System.NonSerialized]
 		_Animation("Animation", Float) = 0
 	}
 

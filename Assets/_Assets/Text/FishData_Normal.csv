@@ -1,0 +1,105 @@
+
+// fish,id,size,score,rate,isboss
+// 小鱼
+// FISH,0,30,20,0
+// FISH,1,30,20,0
+// FISH,2,30,20,0
+// FISH,3,30,30,0
+// FISH,4,30,30,0
+
+FISH,5,30,30,0
+FISH,6,30,30,0
+FISH,7,30,30,0
+
+// 中鱼
+FISH,8,30,30,0
+FISH,9,30,30,0
+FISH,10,30,30,0
+FISH,11,30,30,0
+FISH,12,30,30,0
+FISH,13,30,30,0
+
+
+// 大鱼
+FISH,14,120,100,0
+FISH,15,120,100,0
+FISH,16,120,100,0
+FISH,17,120,100,0
+
+FISH,18,250,200,0
+FISH,19,250,200,0,   // 海龟
+
+// 鱼群
+FISH,20,30,20,0,	// base on fish_0
+FISH,21,30,20,0,	// base on fish_1
+FISH,22,30,20,0,	// base on fish_2
+FISH,23,30,20,0,  // base on fish_3
+FISH,24,30,20,0,  // base on fish_4
+
+// boss
+FISH,32,1000,1000,1, // 鲨鱼1
+FISH,33,2000,2000,1, // 鲨鱼2
+FISH,34,5000,4000,1, // 鲸鱼
+
+// 功能鱼
+FISH,50,20,20,0,  	// 冰冻鱼
+FISH,51,35,20,0, 	// 好多鱼
+FISH,52,100,20,0, 	// 炸弹鱼
+FISH,53,500,500,0, 	// 章鱼
+
+
+
+// bullet,id,level,cost,net_damage
+BULLET,0,0,30,20
+BULLET,1,1,100,100
+BULLET,2,2,200,220
+
+
+
+// path,id,type:0_normal;1_boss;2_octopus
+PATH,0,0
+PATH,1,0
+PATH,2,0
+PATH,3,0
+PATH,4,0
+PATH,5,0
+PATH,6,0
+// boss
+PATH,7,1
+PATH,8,1
+PATH,9,1
+PATH,10,1
+PATH,11,1
+//章鱼
+PATH,12,2
+PATH,13,2
+PATH,14,2
+
+
+
+
+
+BOX,0
+BOX,1
+BOX,2
+BOX,3
+BOX,4
+BOX,5
+
+// wave,wave_id,rate,delay_seconds,content_id:0_normal_fish;1_boss_fish, wave_delay_sec
+WAVE,0,0.3,1,0,3
+WAVE,1,0.1,1,0,3
+WAVE,2,0.3,0.5,0,3
+WAVE,3,0.1,1,0,3
+WAVE,4,0.2,0.5,0,3
+WAVE,5,0,0.5,1,3
+
+
+
+
+
+
+
+// test
+// WAVE,0,0,0.5,1,5
+// WAVE,1,0,0.5,1,5

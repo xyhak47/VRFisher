@@ -4,8 +4,12 @@ using UnityEngine.Assertions;
 
 public class Net : MonoBehaviour
 {
-    [HideInInspector]
+    [System.NonSerialized]
     public int damage = 0;
+    private int touchFishNum = 0;
+
+    [SerializeField]
+    private bool fromBigGun;
 
     void Start()
     {
@@ -22,12 +26,16 @@ public class Net : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        // make sure the net do not working when game is over
+        if (GameController.Instance.Pause) return;
+
+        touchFishNum++;
+
         Fish fish = other.gameObject.GetComponent<Fish>();
         Assert.IsTrue(fish != null, "net catch fish null!");
 
         if (CatchFish(fish))
         {
-            fish.Die();
             GunController.Instance.KillFish(fish, this.gameObject);
         }
         else
@@ -44,10 +52,41 @@ public class Net : MonoBehaviour
         判断： value2 <= value1 ==> kill  else not kill
         */
 
-        float value1 = damage * (1 - GameController.Instance.PumpingRate) / fish.fishData.Size;
+        //float value1 = damage * (1 - GameController.Instance.PumpingRate) / fish.fishData.Size;
+        //float value2 = Random.Range(0.0f, 1.0f);
+
+
+        if (fromBigGun) // big gun
+        {
+            damage = damage - 20 * (touchFishNum - 1);
+            damage = Mathf.Clamp(damage, 10, int.MaxValue);
+        }
+        else // small gun
+        {
+            damage = damage - 10 * (touchFishNum - 1);
+            damage = Mathf.Clamp(damage, 5, int.MaxValue);
+        }
+
+
+        float value1 = 0.0f;
+        if(damage <= fish.fishData.Size)
+        {
+            value1 = damage * (1 - PumpingRateController.Instance.PumpingRate) / fish.fishData.Size;
+        }
+        else //  damage > fish.fishData.Size
+        {
+            value1 = 1 - fish.fishData.Size * PumpingRateController.Instance.PumpingRate / damage;
+        }
+
+        //value1 /= touchFishNum;
+        
+        // test
+        //value1 = -1;
+
         float value2 = Random.Range(0.0f, 1.0f);
 
-        if(value2 <= value1)
+
+        if (value2 <= value1)
         {
             return true;
         }

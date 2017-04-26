@@ -9,9 +9,9 @@ public class PathController : MonoBehaviour
         Instance = this;
     }
 
-    public GameObject GetRandomPath()
+    public GameObject GetRandomPath(FishData fishData)
     {
-        PathData data = CsvParser.Instance.GetRandomPath();
+        PathData data = CsvParser.Instance.GetRandomPath(fishData);
 
         return Resources.Load(Config.PathPrefabFolder + data.Id) as GameObject;
     }

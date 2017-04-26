@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MyWard.tools;
+
 
 
 
@@ -14,50 +14,10 @@ public class RebornController : MonoBehaviour
         Instance = this;
     }
 
-    [HideInInspector]
-    public int RebornTime = 1;
-
-    public bool TryReborn(ref string msg)
-    {
-        try
-        {
-
-
-            //string url = "http://120.26.102.143:80/reborn";
-            string url = "http://test.vrimmer.com/reborn";
-
-            RebornData rn = new RebornData();
-            RebornResultData res = new RebornResultData();
-            ///这里到时候你用我传给你的价格和id，现在只是测试例子
-            rn.price = MyServerManager.GamePrice.ToString();
-            rn.rebornTime = RebornTime;
-            rn.wechatPayId = MyServerManager.WeChatPayId;
-            rn.sign = Encrypt_MD.MakeSign(rn.wechatPayId);
-            string jasondata = Json_Operation.Write_Json(rn);
-            res = (RebornResultData) Json_Operation.Read_Json(Json_Operation.PostJsonData(url, jasondata), res);
-            if (res != null)
-            {
-                Debug.Log(res.resultCode + ":::::" + res.resultMessage);
-                msg = res.resultMessage;
-
-                if (res.resultCode == "1")
-                {
-                    RebornTime++;
-                    return true;
-                }
-
-                return false;
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.Log(ex.ToString());
-        }
-
-        return false;
-    }
-
     private bool beginChoose = false;
+
+    [System.NonSerialized]
+    public bool animationCompleted = false;
 
     public void ShowRebornUI(bool b)
     {
@@ -65,38 +25,23 @@ public class RebornController : MonoBehaviour
         UIController.Instance.ShowRebornUI(b);
     }
 
-
     void Update()
     {
         if (!beginChoose) return;
+        if (!animationCompleted) return;
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            // cancle, and end game
-            GameController.Instance.Pause = true;
-            ShowRebornUI(false);
-            StartCoroutine(UIController.Instance.ShowGameResult());
+            print("CancleReborn");
 
-            SoundController.Instance.PlayMusic(Config.UI);
+            // cancle, and end game
+            CancleReborn();
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             // sure
-            string msg = "";
-            if(TryReborn(ref msg))
-            {
-                ShowRebornUI(false);
-                Invoke("ResumeGame", 2.0f);
-            }
-            else
-            {
-                GameController.Instance.Pause = true;
-                ShowRebornUI(false);
-                StartCoroutine(UIController.Instance.ShowMsg(msg));
-                StartCoroutine(UIController.Instance.ShowGameResult(4));
-            }
-
-            SoundController.Instance.PlayMusic(Config.UI);
+            print("TryToReborn");
+            TryToReborn();
         }
     }
 
@@ -105,19 +50,42 @@ public class RebornController : MonoBehaviour
         GameController.Instance.ResetGame();
     }
 
-    private class RebornData
+    public void CancleReborn()
     {
-        public string wechatPayId { get; set; }
-        public string price { get; set; }
-        public int rebornTime { get; set; }
-        public string sign { get; set; }
-    }
-    private class RebornResultData
-    {
-        public string resultCode { get; set; }
-        public string resultMessage { get; set; }
+        GameController.Instance.Pause = true;
+        ShowRebornUI(false);
+        StartCoroutine(UIController.Instance.ShowGameResult());
+       // GameController.Instance.EndGame();
+
+        SoundController.Instance.PlayMusic(Config.UI);
     }
 
+    private void TryToReborn()
+    {
+        string msg = "";
+        if (NetRequestManager.Instance.TryReborn(ref msg))
+        {
+            ShowRebornUI(false);
+            Invoke("ResumeGame", 2.0f);
+        }
+        else
+        {
+            GameController.Instance.Pause = true;
+            ShowRebornUI(false);
+            StartCoroutine(UIController.Instance.ShowMsg(msg));
+
+            //StartCoroutine(waitToEndGame(3));
+            StartCoroutine(UIController.Instance.ShowGameResult(4));
+        }
+
+        SoundController.Instance.PlayMusic(Config.UI);
+    }
+
+    private IEnumerator waitToEndGame(float sec)
+    {
+        yield return new WaitForSeconds(sec);
+        GameController.Instance.EndGame();
+    }
 }
 
 

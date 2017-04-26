@@ -27,13 +27,13 @@ using UnityEngine;
 //
 public class IVRLensCorrection : MonoBehaviour
 {
-    [HideInInspector]
+    [System.NonSerialized]
     public Vector2 _Center = new Vector2(0.5f, 0.5f);
-    [HideInInspector]
+    [System.NonSerialized]
     public Vector2 _ScaleIn = new Vector2(1.0f, 1.0f);
-    [HideInInspector]
+    [System.NonSerialized]
     public Vector2 _Scale = new Vector2(1.0f, 1.0f);
-    [HideInInspector]
+    [System.NonSerialized]
     public Vector4 _HmdWarpParam = new Vector4(1.0f, 0.0f, 0.0f, 0.0f);
 
     // We will search for camera controller and set it here for access to its members
@@ -53,92 +53,48 @@ public class IVRLensCorrection : MonoBehaviour
     }
 
     // OnRenderImage
-    void OnRenderImage(RenderTexture source, RenderTexture destination)
+    void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        // Use either source input or CameraTexutre, if it exists
-        RenderTexture SourceTexture = source;
-
-        // Replace null material with lens correction material
-        Material material = null;
-
         if (CameraController.LensCorrection == true)
         {
-            //if (CameraController.Chromatic == true)
-            //    material = GetComponent<IVRLensCorrection>().GetMaterial_CA(CameraController.PortraitMode);
-            //else
-            //    material = GetComponent<IVRLensCorrection>().GetMaterial(CameraController.PortraitMode);
-            material = GetMaterial(false);
+            SetPortraitProperties(false);
+
+            material.SetVector("_HmdWarpParam", _HmdWarpParam);
         }
 
         if (material != null)
         {
             // Render with distortion
-            Graphics.Blit(SourceTexture, destination, material);
+            Graphics.Blit(src, dest, material);
         }
         else
         {
             // Pass through
-            Graphics.Blit(SourceTexture, destination);
+            Graphics.Blit(src, dest);
         }
 
     }
 
-    // Called by camera to get lens correction values
-    public Material GetMaterial(bool portrait)
-    {
-        // Set material properties
-        SetPortraitProperties(portrait, ref material);
-
-        material.SetVector("_HmdWarpParam", _HmdWarpParam);
-
-        return material;
-    }
-
-    // Used for chromatic aberration
-    //public Material material_CA;
-    //[HideInInspector]
-    //public Vector4 _ChromaticAberration = new Vector4(0.996f, 0.992f, 1.014f, 1.014f);
-
-    // Called by camera to get lens correction values w/Chromatic aberration
-    //public Material GetMaterial_CA(bool portrait)
-    //{
-    //    // Set material properties
-    //    SetPortraitProperties(portrait, ref material_CA);
-
-    //    material_CA.SetVector("_HmdWarpParam", _HmdWarpParam);
-
-    //    Vector4 _CA = _ChromaticAberration;
-    //    float rSquaredCoeffR = _CA[1] - _CA[0];
-    //    float rSquaredCoeffB = _CA[3] - _CA[2];
-    //    _CA[1] = rSquaredCoeffR;
-    //    _CA[3] = rSquaredCoeffB;
-
-    //    material_CA.SetVector("_ChromaticAberration", _CA);
-
-    //    return material_CA;
-    //}
-
-    // SetPortraitProperties
-    private void SetPortraitProperties(bool portrait, ref Material m)
+    private void SetPortraitProperties(bool portrait)
     {
         if (portrait == true)
         {
             Vector2 tmp = Vector2.zero;
             tmp.x = _Center.y;
             tmp.y = _Center.x;
-            m.SetVector("_Center", tmp);
+            material.SetVector("_Center", tmp);
             tmp.x = _Scale.y;
             tmp.y = _Scale.x;
-            m.SetVector("_Scale", tmp);
+            material.SetVector("_Scale", tmp);
             tmp.x = _ScaleIn.y;
             tmp.y = _ScaleIn.x;
-            m.SetVector("_ScaleIn", tmp);
+            material.SetVector("_ScaleIn", tmp);
         }
         else
         {
-            m.SetVector("_Center", _Center);
-            m.SetVector("_Scale", _Scale);
-            m.SetVector("_ScaleIn", _ScaleIn);
+            material.SetVector("_Center", _Center);
+            material.SetVector("_Scale", _Scale);
+            material.SetVector("_ScaleIn", _ScaleIn);
         }
     }
 }

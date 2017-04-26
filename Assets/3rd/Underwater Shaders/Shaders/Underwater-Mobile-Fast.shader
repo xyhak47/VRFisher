@@ -24,7 +24,7 @@ Shader "Underwater/Mobile Fast"
 		_FogPosition1("Position B (World Y)", Float) = 6
 		_FogStart("Start", Float) = 0
 		_FogEnd("End", Float) = 15
-		[HideInInspector]
+		[System.NonSerialized]
 		_Animation("Animation", Float) = 0
 	}
 

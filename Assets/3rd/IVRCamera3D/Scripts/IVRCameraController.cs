@@ -19,7 +19,7 @@ public class IVRCameraController : MonoBehaviour
     public Camera originalCamera;
 
     // Turn lens distortion on/off; use Chromatic Aberration in lens distortion calculation
-    //[HideInInspector]
+    //[System.NonSerialized]
     public bool LensCorrection = true;
 
 #if CHILDREN_VR
@@ -27,9 +27,9 @@ public class IVRCameraController : MonoBehaviour
     public bool copyrightOn = true;
 #endif
 
-    [HideInInspector]
+    [System.NonSerialized]
     public bool Chromatic = false;
-    [HideInInspector]
+    [System.NonSerialized]
     public static Quaternion _gyroAttitude;
 
     // PRIVATE MEMBERS
@@ -108,6 +108,8 @@ public class IVRCameraController : MonoBehaviour
 
 	void UpdateCameras ()
 	{
+        if (!LensCorrection) return;
+
         //leftCamera = originalCamera;
         //_leftCamera.name = "Camera_left";
         leftCamera = Instantiate(originalCamera, Vector3.zero, Quaternion.identity) as Camera;
@@ -156,6 +158,11 @@ public class IVRCameraController : MonoBehaviour
 
         ConfigureCameraLensCorrection(ref leftCamera);
         ConfigureCameraLensCorrection(ref rightCamera);
+
+
+        // get the ivr camera ref
+        CameraController.Instance.left = leftCamera;
+        CameraController.Instance.right = rightCamera;
     }
 
 

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class Quit : MonoBehaviour
 {
     public Image red;
-    public float deltaSeconds = 5;
+    public float deltaSeconds;
 
     private bool InCounting = false;
 

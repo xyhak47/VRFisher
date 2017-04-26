@@ -15,12 +15,16 @@ Shader "Custom/IVRLensCorrection"
 	Properties
 	{
 		_MainTex("Base (RGB)", 2D) = "" {}
+
+		// for game special effect
+		_IceTex("ice tex", 2D) = "white" {}
+		_IceTrigger("ice effect trigger", Float) = 0.0
 	}
 
 		// Shader code pasted into all further CGPROGRAM blocks
-		CGINCLUDE
+	CGINCLUDE
 
-#include "UnityCG.cginc"
+	#include "UnityCG.cginc"
 
 	struct v2f
 	{
@@ -44,6 +48,10 @@ Shader "Custom/IVRLensCorrection"
 	float4 _HmdWarpParam = float4(0, 0, 0, 0);
 	float2 _IMSScale = float2(0, 0);
 
+	// game effect -- add by xyh
+	sampler2D _IceTex;
+	fixed _IceTrigger;
+
 	// Scales input texture coordinates for distortion.
 	// ScaleIn maps texture coordinates to Scales to ([-1, 1] * scaleFactor),
 	// where scaleFactor compensates input for K1 and K2, to allow full screen size to be used.
@@ -63,8 +71,12 @@ Shader "Custom/IVRLensCorrection"
 
 		if (any(clamp(tc, float2(0.0, 0.0), float2(1.0, 1.0)) - tc))
 			return 0;
-		else
-			return tex2D(_MainTex, tc);
+		
+		float4 sourceCol = tex2D(_MainTex, tc);
+		float4 iceCol = tex2D(_IceTex, tc);
+		iceCol.a = iceCol.a * _IceTrigger;
+		sourceCol.rgb = lerp(sourceCol.rgb, iceCol.rgb, iceCol.a);
+		return sourceCol;
 	}
 
 	half4 frag(v2f i) : COLOR
@@ -75,17 +87,22 @@ Shader "Custom/IVRLensCorrection"
 		return c;
 	}
 
-		ENDCG
+	ENDCG
 
-		Subshader {
-		Pass{
+	Subshader 
+	{
+
+		Pass
+		{
 			ZTest Always Cull Off ZWrite Off
-			Fog{ Mode off }
+			Fog { Mode off }
 
 			CGPROGRAM
-#pragma fragmentoption ARB_precision_hint_fastest
-#pragma vertex vert
-#pragma fragment frag
+
+			#pragma fragmentoption ARB_precision_hint_fastest
+			#pragma vertex vert
+			#pragma fragment frag
+
 			ENDCG
 		}
 

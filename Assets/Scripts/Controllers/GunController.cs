@@ -17,7 +17,8 @@ public class GunController : MonoBehaviour
     public GameObject fishScorePrefab;
     public GameObject gunFireEffectPrefab;
 
-    public GameObject gun;
+    public GameObject[] guns;
+    private GameObject gun;
 
     public GameObject fishKilledEffect;
     public GameObject fishKilledEffectBoss;
@@ -26,6 +27,9 @@ public class GunController : MonoBehaviour
 
     private float lastTime = 0;
     public float shootDeltaTime = 0.2f;
+
+    [System.NonSerialized]
+    public bool IsShootQuit = false;
 
     void Update()
     {
@@ -41,7 +45,7 @@ public class GunController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            ChangeBullet();
+            SelectBullet();
         }
     }
 
@@ -58,28 +62,47 @@ public class GunController : MonoBehaviour
 
     private void Shoot()
     {
+        BulletData bullet = CsvParser.Instance.List_BulletData[bulletIndex];
+
+        if (bullet.Cost > GameController.Instance.GunScore)
+        {
+            if(bulletIndex > 0) // limit to second last  type bullet
+            {
+                bulletIndex--;
+                bulletIndex = Mathf.Clamp(bulletIndex, 0, CsvParser.Instance.List_BulletData.Count - 1);
+                ChangeBullet();
+                return;
+            }
+        }
+
+
         // animation
-        gun.GetComponent<Animator>().SetTrigger("shoot");
+        gun.GetComponent<Animator>().SetTrigger("Shoot");
 
         // bullet
         Instantiate(bulletPrefabs[bulletIndex], bulletPos.position, bulletPos.rotation);
-        BulletData bullet = CsvParser.Instance.List_BulletData[bulletIndex];
-        GameController.Instance.GunScore -= bullet.Cost;
-        UIController.Instance.SetGunScore(GameController.Instance.GunScore);
+        if(!IsShootQuit)
+        {
+            GameController.Instance.GunScore -= bullet.Cost;
+            UIController.Instance.UpdateScore();
+        }
+
 
         // effect
         GameObject effect = Instantiate(gunFireEffectPrefab, gunFireEffectPos.position, Quaternion.identity) as GameObject;
         effect.transform.parent = gunFireEffectPos;
 
         // sound
-        SoundController.Instance.PlayMusic(Config.Shoot);
+        SoundController.Instance.PlayMusic(Config.Shoot + bullet.Id);
 
-        if (GameController.Instance.GunScore <= 0)
-        {
-            GameController.Instance.GunScore = 0;
-            UIController.Instance.SetGunScore(GameController.Instance.GunScore);
-            GameController.Instance.ShowReborn();
-        }
+        GameController.Instance.CheckEndGame();
+    }
+
+    private void SelectBullet()
+    {
+        bulletIndex++;
+        bulletIndex = bulletIndex > CsvParser.Instance.List_BulletData.Count - 1 ? 0 : bulletIndex;
+        ChangeBullet();
     }
 
     public void HitFish(GameObject bullet, BulletData bulletData)
@@ -88,30 +111,47 @@ public class GunController : MonoBehaviour
         net.GetComponent<Net>().damage = bulletData.NetDamage;
     }
 
+    public void HitBox(GameObject box)
+    {
+        box.GetComponent<Box>().PickedUp();
+    }
+
     private void ChangeBullet()
     {
-        bulletIndex++;
-        bulletIndex = bulletIndex > CsvParser.Instance.List_BulletData.Count - 1 ? 0 : bulletIndex;
+        // bulluet
         BulletData bullet = CsvParser.Instance.List_BulletData[bulletIndex];
         UIController.Instance.SetBulletCost(bullet);
+
+        // gun
+        foreach (GameObject g in guns) g.active = false;
+        gun = guns[bulletIndex];
+        gun.active = true;
 
         SoundController.Instance.PlayMusic(Config.ChangeBullet);
     }
 
+    public void ResetBullet()
+    {
+        bulletIndex = 0;
+        ChangeBullet();
+    }
+
     public void KillFish(Fish fish, GameObject net)
     {
+        WaveController.Instance.KillFish(fish, net);
+
+        // scoreUI
+        GameController.Instance.FishKilledScore += fish.fishData.Score;
         GameController.Instance.GunScore += fish.fishData.Score;
-        UIController.Instance.SetGunScore(GameController.Instance.GunScore);
+        UIController.Instance.UpdateScore();
 
         GameObject fishscore = Instantiate(fishScorePrefab) as GameObject;
         fishscore.transform.position = fish.transform.position + new Vector3(0, 0.8f, 0);
         fishscore.transform.rotation = net.transform.rotation;
         fishscore.GetComponentInChildren<Text>().text = "+" + fish.GetComponent<Fish>().fishData.Score;
-
-        SoundController.Instance.PlayMusic(Config.FishDie);
-
+       
         // effect
-        if(fish.fishData.IsBoss)
+        if (fish.fishData.IsBoss)
         {
             Instantiate(fishKilledEffectBoss, fish.transform.position, net.transform.rotation);
         }
@@ -119,5 +159,12 @@ public class GunController : MonoBehaviour
         {
             Instantiate(fishKilledEffect, fish.transform.position, net.transform.rotation);
         }
+
+        fish.Die();
+    }
+
+    public void GunGetHit()
+    {
+        gun.GetComponent<Gun>().Animation_GetHit();        
     }
 }

@@ -2,18 +2,18 @@ Shader "Underwater/Terrain"
 {
 	Properties
 	{
-		[HideInInspector] _Control ("Control (RGBA)", 2D) = "red" {}
-		[HideInInspector] _Splat3 ("Layer 3 (A)", 2D) = "white" {}
-		[HideInInspector] _Splat2 ("Layer 2 (B)", 2D) = "white" {}
-		[HideInInspector] _Splat1 ("Layer 1 (G)", 2D) = "white" {}
-		[HideInInspector] _Splat0 ("Layer 0 (R)", 2D) = "white" {}
-		[HideInInspector] _Normal3 ("Normal 3 (A)", 2D) = "bump" {}
-		[HideInInspector] _Normal2 ("Normal 2 (B)", 2D) = "bump" {}
-		[HideInInspector] _Normal1 ("Normal 1 (G)", 2D) = "bump" {}
-		[HideInInspector] _Normal0 ("Normal 0 (R)", 2D) = "bump" {}
+		[System.NonSerialized] _Control ("Control (RGBA)", 2D) = "red" {}
+		[System.NonSerialized] _Splat3 ("Layer 3 (A)", 2D) = "white" {}
+		[System.NonSerialized] _Splat2 ("Layer 2 (B)", 2D) = "white" {}
+		[System.NonSerialized] _Splat1 ("Layer 1 (G)", 2D) = "white" {}
+		[System.NonSerialized] _Splat0 ("Layer 0 (R)", 2D) = "white" {}
+		[System.NonSerialized] _Normal3 ("Normal 3 (A)", 2D) = "bump" {}
+		[System.NonSerialized] _Normal2 ("Normal 2 (B)", 2D) = "bump" {}
+		[System.NonSerialized] _Normal1 ("Normal 1 (G)", 2D) = "bump" {}
+		[System.NonSerialized] _Normal0 ("Normal 0 (R)", 2D) = "bump" {}
 		// used in fallback on old cards & base map
-		[HideInInspector] _MainTex ("BaseMap (RGB)", 2D) = "white" {}
-		[HideInInspector] _Color ("Main Color", Color) = (1,1,1,1)
+		[System.NonSerialized] _MainTex ("BaseMap (RGB)", 2D) = "white" {}
+		[System.NonSerialized] _Color ("Main Color", Color) = (1,1,1,1)
 		// Custom Properties
 		[Header(Caustics)]
 		_Caustics("Caustics Texture (RGBA)", 2D) = "white" {}
@@ -33,7 +33,7 @@ Shader "Underwater/Terrain"
 		_FogPosition1("Position B (World Y)", Float) = 6
 		_FogStart("Start", Float) = 0
 		_FogEnd("End", Float) = 15
-		[HideInInspector]
+		[System.NonSerialized]
 		_Animation("Animation", Float) = 0
 	}
 
