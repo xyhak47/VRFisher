@@ -82,11 +82,11 @@ public class GameController : MonoBehaviour
         // normal do not need to send score to server, directly end game
         if(IsNormalGame)
         {
-            MyServerManager.EndGame();
+            //MyServerManager.EndGame();
         }
         else
         {
-            MyServerManager.SendGoalToClient(GunScore);
+           // MyServerManager.SendGoalToClient(GunScore);
         }
     }
 
@@ -100,7 +100,7 @@ public class GameController : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        MyServerManager.EndGame();
+       // MyServerManager.EndGame();
     }
 
     // 复活ui

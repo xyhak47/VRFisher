@@ -1,4 +1,6 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 // Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
 
 Shader "Underwater/Mobile Fast"
@@ -107,7 +109,7 @@ Shader "Underwater/Mobile Fast"
 
 				half3 worldNormal = UnityObjectToWorldNormal(v.normal);
 
-				o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.position = UnityObjectToClipPos(v.vertex);
 				o.mainTexCoord = v.texcoord;
 				o.ambientColor = fixed4(ShadeSH9(half4(worldNormal, 1)), (1 - mixed));
 				o.fogColor = fixed4((fogColor * mixed), diffuseReflection * (1 - mixed));

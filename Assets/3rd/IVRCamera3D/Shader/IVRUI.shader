@@ -1,4 +1,6 @@
-﻿Shader "Custom/IVRUI"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Custom/IVRUI"
 {
 	Properties
 	{
@@ -48,7 +50,7 @@
 			v2f vert(appdata_full v)
 			{
 				v2f o;
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.texcoord = v.texcoord.xy;
 				o.color = v.color * _Color;
 				#ifdef PIXELSNAP_ON
